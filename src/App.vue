@@ -3,17 +3,29 @@
     <div class="todo-container">
       <div class="todo-wrap">
         <TodoHeader :addItem="addItem"/>
-        <TodoList :todos="todos" :removeTodo="removeTodo"/>
+        <TodoList :todos="todos"/>
         <TodoFooter :todos="todos" :removeCompleted="removeCompleted" :selectAll="selectAll"/>
       </div>
     </div>
   </div>
 </template>
 
+<!-- 
+绑定事件监听     ---订阅消息
+触发事件         ---发布消息
+
+
+
+
+ -->
+
 <script>
 import TodoHeader from './components/todoHeader'
 import TodoList from './components/todoList'
 import TodoFooter from './components/todoFooter'
+
+import PubSub from 'pubsub-js'
+
 
 
 export default {
@@ -23,7 +35,7 @@ export default {
   },
   data(){
     return{
-      todos:[],
+      todos:JSON.parse(localStorage.getItem('todo_data') || '[]'),
     }
   },
   methods:{
@@ -63,6 +75,11 @@ export default {
   },
   mounted(){
     this.todos=JSON.parse(localStorage.getItem('todo_data'));
+
+    //订阅消息
+    PubSub.subscribe('removeTodo',(msg,index)=>{
+      this.removeTodo(index);
+    })
   }
   
 }
